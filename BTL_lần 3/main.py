@@ -5,6 +5,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.svm import SVC
 from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
 
 
 #------------------getDATA---------------------
@@ -16,22 +17,17 @@ y = diabetes[:, 10]
 # ---------------------------TRANING AND TEST-------------------------------
 trainX, testX, trainY, testY = train_test_split(X, y, test_size = 0.3,random_state=1)
 
-svm = SVC(kernel = 'linear', C = 1e5) # just a big number
+svm = SVC(kernel = 'linear', C = 1e5) # just a big number   #tuyến tính
 logre = LogisticRegression()
 
 svm.fit(trainX,trainY)
-wSvm_0=svm.intercept_
-wSvm_1=svm.coef_
-
 logre.fit(trainX, trainY)
-wLog_0=logre.intercept_
-wLog_1=logre.coef_
 
 #--------------------------RESULT--------------------------------------------------
 y_pred_svm = svm.predict(testX)
 y_pred_log = logre.predict(testX)
-rate_svm = accuracy_score(testY, y_pred_svm)*100
-rate_log = accuracy_score(testY, y_pred_log)*100
+rate_svm = round(accuracy_score(testY, y_pred_svm)*100)
+rate_log = round(accuracy_score(testY, y_pred_log)*100)
 
 for i in range(60):
     print("Gía trị thưc: ",testY[i]," => Dự đoán svm: ",y_pred_svm[i]," =>Dự đoán log: ",y_pred_log[i])
@@ -60,24 +56,32 @@ def doan():
     t8 = float(entry8.get())
     t9 = float(entry9.get())
 
-    a = np.array([t1,t2,t3,t4,t5,t6,t7,t8,t9]).T
-    ySvm = np.dot(wSvm_1 , a) + wSvm_0
-    yLog = np.dot(wLog_1 , a) + wLog_0
+    a = np.array([t1,t2,t3,t4,t5,t6,t7,t8,t9], dtype=float).reshape(1, -1)
 
-    if ySvm < 0:
-        label_show.set(float(0))
+    
+    ySvm = svm.predict(a)
+    yLog = logre.predict(a)
+
+
+    if ySvm ==1:
+        label_show.set("Có thể sử dụng")
     else:
-        label_show.set(float(1))
-    if yLog < 0:
-        label_show1.set(float(0))
+        label_show.set("Không thể sử dụng")
+    if yLog == 1:
+        label_show2.set("Có thể sử dụng")
     else:
-        label_show1.set(float(1))
+        label_show2.set("không thể sử dụng")
+    
+    label_show1.set(float(rate_svm))
+    label_show3.set(float(rate_log))
     
     
 root =Tk()
 root.option_add("*Font","TimeNewRoman 14")
 label_show=StringVar()
 label_show1=StringVar()
+label_show2=StringVar()
+label_show3=StringVar()
 
 Label (root, text="Hãy nhập thông tin").grid(row=0,columnspan=2)
 Label (root, text="ph").grid(row=1,column=0,padx=10,pady=10,sticky = W)
@@ -110,6 +114,10 @@ entry9.grid(row=9,column=1,padx=10)
 Button (root, text="Kết quả dự đoán", command=doan,bg= 'cyan').grid(row=10,column=0,padx=10,pady=10,sticky = E)
 Label (root, text="SVM").grid(row=11,column=0,padx=10,pady=10,sticky = W)
 Label(root,textvariable=label_show).grid(row=11,column=1)
-Label (root, text="Logistic Regestion").grid(row=12,column=0,padx=10,pady=10,sticky = W)
+Label (root, text="Tỉ lệ dự đoán:").grid(row=12,column=0,padx=10,pady=10,sticky = W)
 Label(root,textvariable=label_show1).grid(row=12,column=1)
+Label (root, text="Logistic Regestion").grid(row=13,column=0,padx=10,pady=10,sticky = W)
+Label(root,textvariable=label_show2).grid(row=13,column=1)
+Label (root, text="Tỉ lệ dự đoán:").grid(row=14,column=0,padx=10,pady=10,sticky = W)
+Label(root,textvariable=label_show3).grid(row=14,column=1)
 root.mainloop()
