@@ -7,7 +7,7 @@ from sklearn.linear_model import Perceptron
 
 
 #------------load and read file csv--------------------
-diabetes = pd.read_csv('water.csv').values
+diabetes = pd.read_csv('data_water.csv').values
 
 X = diabetes[:, 1:10]
 y = diabetes[:, 10]
@@ -18,7 +18,7 @@ y = diabetes[:, 10]
 trainX, testX, trainY, testY = train_test_split(X, y, test_size = 0.3, shuffle=False)
 
 #-----------------ID3---------------------------------
-clf_id3 = tree.DecisionTreeClassifier(criterion = 'entropy')
+clf_id3 = tree.DecisionTreeClassifier(criterion = 'gini')
 clf_id3.fit(trainX, trainY)
 
 #------------------perceptron-----------------
